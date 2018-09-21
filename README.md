@@ -21,6 +21,23 @@ The logic that is followed is:
 
   * Run an LDAP search to see if the recipient can be found in LDAP.
 
+Example:
+
+	; default entry, for hosts in config/host_list
+	server=ldap://127.0.0.1:389
+	;binddn=cn=admin,dc=example,dc=com
+	;bindpw=secret
+	;basedn=dc=example,dc=com
+	;objectclass=qmailUser
+	filter=(&(objectClass=person)(|(mail=%u)(proxyAddresses=%u)))
+
+	[example2.com]
+	server=ldap://127.0.0.2:389
+	binddn=cn=admin,dc=example2,dc=com
+	bindpw=secretsAreForSissies
+	basedn=dc=example2,dc=com
+	objectclass=qmailUser
+	filter=
 
 
 <!-- leave these buried at the bottom of the document -->

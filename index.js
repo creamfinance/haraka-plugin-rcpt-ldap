@@ -23,6 +23,7 @@ exports.register = function () {
 
 exports.load_ldap_ini = function () {
     const plugin = this;
+
     plugin.cfg = plugin.config.get('rcpt_to.ldap.ini', 'ini', function () {
         plugin.load_ldap_ini();
     });
@@ -97,7 +98,7 @@ exports.ldap_rcpt = function (next, connection, params) {
         res.on('end', function (result) {
             connection.logdebug(plugin, 'LDAP search results: ' + items.length + ' -- ' + util.inspect(items));
 
-            if (items.length) return next();
+            if (items.length) return next(OK);
 
             next(DENY, "Sorry - no mailbox here by that name.");
         });
@@ -106,14 +107,13 @@ exports.ldap_rcpt = function (next, connection, params) {
 };
 
 exports.get_search_opts = function (cfg, rcpt) {
-
     const plain_rcpt = rcpt.address().toLowerCase();
     // JSON.stringify(rcpt.original).replace(/</, '').replace(/>/, '').replace(/"/g, '');
 
     return {
-        filter: '(&(objectClass=' + cfg.objectclass + ')(|(mail=' + plain_rcpt  + ')(mailAlternateAddress=' + plain_rcpt + ')))',
+        filter: cfg.filter.replace(/%u/g, plain_rcpt) || '(&(objectClass=' + cfg.objectclass + ')(|(mail=' + plain_rcpt  + ')(mailAlternateAddress=' + plain_rcpt + ')))',
         scope: 'sub',
-        attributes: ['dn', 'mail', 'mailAlternateAddress']
+        attributes: ['dn']
     };
 };
 
