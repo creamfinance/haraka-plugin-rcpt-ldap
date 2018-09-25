@@ -41,7 +41,9 @@ exports.ldap_rcpt = function (next, connection, params) {
     }
     const domain = rcpt.host.toLowerCase();
 
-    if (!plugin.in_host_list(domain) && !plugin.in_ldap_ini(domain)) {
+    console.log(plugin.cfg.main);
+
+    if (plugin.cfg.main.disable_host_check == false && !plugin.in_host_list(domain) && !plugin.in_ldap_ini(domain)) {
         connection.logdebug(plugin, "domain '" + domain + "' is not local; skip ldap");
         return next();
     }
